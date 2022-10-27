@@ -20,7 +20,8 @@ In this project, I made admin pannel with owl admin, also I create fabric-fakers
 - **I made a frontend and completed all the interconnections.**
 
 ## Project screenshot
-## Admin panel
+## Frontend
+![image](https://user-images.githubusercontent.com/67556607/198347949-9d247f29-b337-469d-943c-830360297eca.png)
 ![image](https://user-images.githubusercontent.com/67556607/198002805-6b1e13a5-4f69-4736-a20c-e34b12655c49.png)
 ![image](https://user-images.githubusercontent.com/67556607/198002854-a77e7f52-7ce1-4846-a1cc-f0307b9591ab.png)
 ![image](https://user-images.githubusercontent.com/67556607/198003054-ccbbfe9f-1c94-4cfc-b501-3b246bffdce8.png)
