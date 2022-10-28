@@ -7,6 +7,7 @@ use AdminColumnFilter;
 use AdminDisplay;
 use AdminForm;
 use AdminFormElement;
+use AdminSection;
 use Illuminate\Database\Eloquent\Model;
 use SleepingOwl\Admin\Contracts\Display\DisplayInterface;
 use SleepingOwl\Admin\Contracts\Form\FormInterface;
@@ -64,11 +65,10 @@ class Orderitems extends Section implements Initializable
 
 
             AdminColumn::link('product.name', 'Name', 'created_at')->setWidth('250px')
-            
-                ->setOrderable(function($query, $direction) {
+
+                ->setOrderable(function ($query, $direction) {
                     $query->orderBy('created_at', $direction);
-                })
-            ,
+                }),
             AdminColumn::text('price', 'стоимость')->setWidth('80px')->setHtmlAttribute('class', 'text-center'),
             AdminColumn::text('discount', 'скидка')->setWidth('100px')->setHtmlAttribute('class', 'text-center'),
             AdminColumn::text('count', 'кол-во')->setWidth('100px')->setHtmlAttribute('class', 'text-center'),
@@ -77,14 +77,13 @@ class Orderitems extends Section implements Initializable
         ];
 
         $display = AdminDisplay::datatables()
-            ->with('product','order')
+            ->with('product', 'order')
             ->setName('firstdatatables')
             ->setOrder([[0, 'asc']])
             ->setDisplaySearch(true)
             ->paginate(25)
             ->setColumns($columns)
-            ->setHtmlAttribute('class', 'table-primary table-hover th-center')
-        ;
+            ->setHtmlAttribute('class', 'table-primary table-hover th-center');
 
         if (isset($payload['order_id'])) {
             $display->setApply(function ($query) use (&$payload) {
@@ -95,7 +94,8 @@ class Orderitems extends Section implements Initializable
         return $display;
     }
 
-    public function is_session_exists() {
+    public function is_session_exists()
+    {
         $sessionName = session_name();
         if (isset($_COOKIE[$sessionName]) || isset($_REQUEST[$sessionName])) {
             session_start();
@@ -116,60 +116,60 @@ class Orderitems extends Section implements Initializable
         $tabs = AdminDisplay::tabbed();
         $tabs->setTabs(function ($tab) {
             $tabs = [];
-        
 
-        //////
-        $form = AdminForm::card()->addBody([
-            AdminFormElement::columns()->addColumn([
-                
-                AdminFormElement::hidden('order_id')->setDefaultValue($_SESSION['order_id']), 
-                AdminFormElement::hidden('product_id'), 
+        $this->is_session_exists();
+        $order_id = isset($_SESSION['order_id']) ? $_SESSION['order_id'] : null;
+            //////
+            $form = AdminForm::card()->addBody([
+                AdminFormElement::columns()->addColumn([
+                    AdminFormElement::hidden('order_id')->setDefaultValue($order_id), 
+                    
+                    AdminFormElement::hidden('product_id'),
 
-                AdminFormElement::html('<h6 >Наименование товара: <span class="formname"> </span><h6>'),
+                    AdminFormElement::html('<h6 >Наименование товара: <span class="formname"> </span><h6>'),
 
-                AdminFormElement::html('<h6>Цена :<span class="formprice"> </span> <h6>'),
+                    AdminFormElement::html('<h6>Цена :<span class="formprice"> </span> <h6>'),
 
-                AdminFormElement::hidden('price'),                     
-                     AdminFormElement::text('count', 'Количество')->required(),
-                     AdminFormElement::select('proc', 'скидка %', ['0','5', '10', '15'])->setDefaultValue(0)
-                     ->setValueSkipped(true),
-                     AdminFormElement::hidden('discount', 'скидка'),
-                     AdminFormElement::html('<h6>Сумма :<span class="formcost"> </span> <h6>'),
-                     AdminFormElement::hidden('cost')->required(),
+                    AdminFormElement::hidden('price'),
+                    AdminFormElement::text('count', 'Количество')->required(),
+                    AdminFormElement::select('proc', 'скидка %', ['0', '5', '10', '15'])->setDefaultValue(0)
+                        ->setValueSkipped(true),
+                    AdminFormElement::hidden('discount', 'скидка'),
+                    AdminFormElement::html('<h6>Сумма :<span class="formcost"> </span> <h6>'),
+                    AdminFormElement::hidden('cost')->required(),
 
-                
-            ], 'col-xs-12 col-sm-6 col-md-4 col-lg-4')->addColumn([
-                AdminFormElement::text('id', 'ID')->setReadonly(true),
 
-                
-            ], 'col-xs-12 col-sm-6 col-md-8 col-lg-8'),
-        ]);
+                ], 'col-xs-12 col-sm-6 col-md-4 col-lg-4')->addColumn([
+                    AdminFormElement::text('id', 'ID')->setReadonly(true),
 
-        $form->getButtons()->setButtons([
-            'save'  => new Save(),
-            'save_and_close'  => new SaveAndClose(),
-            // 'save_and_create'  => new SaveAndCreate(),
-            'cancel'  => (new Cancel()),
-        ]);
 
-        $tabs[] = AdminDisplay::tab($form)->setLabel('Orders')->setHtmlAttribute('class','orders');
+                ], 'col-xs-12 col-sm-6 col-md-8 col-lg-8'),
+            ]);
 
-        $html =  AdminFormElement::columns()->addColumn([
-            AdminSection::getModel(Products::class)
+            $form->getButtons()->setButtons([
+                'save'  => new Save(),
+                'save_and_close'  => new SaveAndClose(),
+                // 'save_and_create'  => new SaveAndCreate(),
+                'cancel'  => (new Cancel()),
+            ]);
+
+            $tabs[] = AdminDisplay::tab($form)->setLabel('Orders')->setHtmlAttribute('class', 'orders');
+
+            $html =  AdminFormElement::columns()->addColumn([
+                AdminSection::getModel(Products::class)
                     ->fireDisplay()
                     ->addScript('custom-script', asset('js/orderitems.js'))
             ], 'col-md-12 productsorderitems');
 
-            $tabs[] = AdminDisplay::tab($html)->setLabel('Товары')->setHtmlAttribute('class','tovar');
+            $tabs[] = AdminDisplay::tab($html)->setLabel('Товары')->setHtmlAttribute('class', 'tovar');
 
 
 
+
+            return $tabs;
+        });
 
         return $tabs;
-    });
-    
-    return $tabs;
-
     }
 
     /**

@@ -24,7 +24,7 @@ class CreateOrdersTable extends Migration
             //$table->bigInteger('user_id')->nullable();
 
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
-
+      
 
         });
     }
