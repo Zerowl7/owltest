@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 use Illuminate\Database\Seeder;
 
-class Userseeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
